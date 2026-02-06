@@ -1,0 +1,675 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Panel - Vishal Anime</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <!-- Login Screen -->
+    <div id="loginScreen" class="login-screen">
+        <div class="login-container">
+            <div class="login-header">
+                <div class="logo-circle">
+                    <span class="logo-icon">🎬</span>
+                </div>
+                <h1>Vishal Animes</h1>
+                <p class="login-subtitle">Admin Access Portal</p>
+            </div>
+            
+            <form id="loginForm" class="login-form">
+                <div class="input-group">
+                    <div class="input-icon">👤</div>
+                    <input 
+                        type="text" 
+                        id="adminUsername" 
+                        placeholder="Username" 
+                        required 
+                        autocomplete="username"
+                        class="form-input"
+                    >
+                </div>
+                
+                <div class="input-group">
+                    <div class="input-icon">🔒</div>
+                    <input 
+                        type="password" 
+                        id="adminPassword" 
+                        placeholder="Password" 
+                        required 
+                        autocomplete="current-password"
+                        class="form-input"
+                    >
+                </div>
+                
+                <button type="submit" class="btn-login">
+                    <span>Sign In</span>
+                    <span class="arrow">→</span>
+                </button>
+            </form>
+            
+            <div id="loginError" class="error-message hidden">
+                <span class="error-icon">⚠️</span>
+                <span>Invalid username or password</span>
+            </div>
+            
+            <div class="login-footer">
+                <a href="index.html" class="back-link">
+                    <span>←</span> Back to Home
+                </a>
+            </div>
+        </div>
+        
+        <div class="login-background">
+            <div class="bg-circle circle-1"></div>
+            <div class="bg-circle circle-2"></div>
+            <div class="bg-circle circle-3"></div>
+        </div>
+    </div>
+
+    <!-- Admin Panel (Hidden until login) -->
+    <div id="adminPanel" class="hidden">
+        <header class="admin-header">
+            <div class="container">
+                <div class="header-content">
+                    <div class="header-left">
+                        <div class="logo-small">🎬</div>
+                        <div>
+                            <h1>Vishal Animes</h1>
+                            <p class="header-tagline">Content Management System</p>
+                        </div>
+                    </div>
+                    <div class="header-right">
+                        <div class="user-profile">
+                            <div class="user-avatar">
+                                <span id="userInitial">U</span>
+                            </div>
+                            <div class="user-details">
+                                <span id="welcomeUser" class="user-name">Welcome!</span>
+                                <span id="userRole" class="user-role-badge">Admin</span>
+                            </div>
+                        </div>
+                        <nav class="header-nav">
+                            <a href="index.html" class="nav-link">
+                                <span class="nav-icon">🏠</span> Home
+                            </a>
+                            <a href="#" id="logoutBtn" class="nav-link logout-link">
+                                <span class="nav-icon">🚪</span> Logout
+                            </a>
+                        </nav>
+                    </div>
+                </div>
+            </div>
+        </header>
+
+        <main class="container">
+            <div class="admin-container">
+            <h2>Add New Anime</h2>
+            <form id="animeForm" class="admin-form">
+                <div class="form-group">
+                    <label for="animeName">Anime Name *</label>
+                    <input type="text" id="animeName" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="animePoster">Poster URL *</label>
+                    <input type="url" id="animePoster" placeholder="https://example.com/poster.jpg" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="animeDescription">Description (Optional)</label>
+                    <textarea id="animeDescription" rows="3"></textarea>
+                </div>
+
+                <button type="submit" class="btn-primary">Create Anime</button>
+            </form>
+
+            <hr>
+
+            <h2>Add Episode to Anime</h2>
+            <form id="episodeForm" class="admin-form">
+                <div class="form-group">
+                    <label for="selectAnime">Select Anime *</label>
+                    <select id="selectAnime" required>
+                        <option value="">-- Select Anime --</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label for="episodeNumber">Episode Number *</label>
+                    <input type="number" id="episodeNumber" min="1" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="episodeThumbnail">Episode Thumbnail URL *</label>
+                    <input type="url" id="episodeThumbnail" placeholder="https://example.com/thumbnail.jpg" required>
+                </div>
+
+                <h3>Quality Links</h3>
+                
+                <div class="form-group">
+                    <label for="link480p">480p Link</label>
+                    <input type="url" id="link480p" placeholder="https://your-streaming-link.com/480p">
+                </div>
+
+                <div class="form-group">
+                    <label for="link720p">720p Link</label>
+                    <input type="url" id="link720p" placeholder="https://your-streaming-link.com/720p">
+                </div>
+
+                <div class="form-group">
+                    <label for="link1080p">1080p Link</label>
+                    <input type="url" id="link1080p" placeholder="https://your-streaming-link.com/1080p">
+                </div>
+
+                <button type="submit" class="btn-primary">Add Episode</button>
+            </form>
+
+            <hr>
+
+            <h2>Existing Anime</h2>
+            <div id="animeList" class="anime-list">
+                <p class="loading">Loading anime list...</p>
+            </div>
+
+            <!-- OWNER ONLY FEATURES -->
+            <div class="owner-only hidden">
+                <hr>
+                <h2 class="owner-title">👑 Owner Panel - Special Features</h2>
+                
+                <!-- User Management -->
+                <div class="owner-section">
+                    <h3>👥 User Management</h3>
+                    <div class="user-list">
+                        <div class="user-item">
+                            <span class="user-badge admin">Admin</span>
+                            <strong>Vishal_Animes</strong>
+                            <span class="user-status">Active</span>
+                        </div>
+                        <div class="user-item">
+                            <span class="user-badge admin">Admin</span>
+                            <strong>abnormal_config</strong>
+                            <span class="user-status">Active</span>
+                        </div>
+                        <div class="user-item">
+                            <span class="user-badge owner">Owner</span>
+                            <strong>owner00</strong>
+                            <span class="user-status">Active</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Site Statistics -->
+                <div class="owner-section">
+                    <h3>📊 Site Statistics</h3>
+                    <div class="stats-grid">
+                        <div class="stat-card">
+                            <div class="stat-number" id="totalAnime">0</div>
+                            <div class="stat-label">Total Anime</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-number" id="totalEpisodes">0</div>
+                            <div class="stat-label">Total Episodes</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-number" id="totalQualities">0</div>
+                            <div class="stat-label">Quality Links</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Bulk Operations -->
+                <div class="owner-section">
+                    <h3>⚡ Bulk Operations</h3>
+                    <div class="bulk-buttons">
+                        <button class="btn-warning" onclick="exportAllData()">📥 Export All Data (JSON)</button>
+                        <button class="btn-danger" onclick="deleteAllAnime()">🗑️ Delete All Anime (Careful!)</button>
+                    </div>
+                </div>
+
+                <!-- Activity Log -->
+                <div class="owner-section">
+                    <h3>📜 Recent Activity Log</h3>
+                    <div id="activityLog" class="activity-log">
+                        <p class="log-empty">Activity logging ready...</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+    </div>
+
+    <script>
+        // Activity Log Storage
+        function logActivity(action, details) {
+            if (!isOwner()) return;
+            
+            const logs = JSON.parse(localStorage.getItem('activityLogs') || '[]');
+            logs.unshift({
+                timestamp: new Date().toISOString(),
+                user: currentUser.username,
+                action: action,
+                details: details
+            });
+            
+            // Keep only last 20 logs
+            if (logs.length > 20) logs.pop();
+            
+            localStorage.setItem('activityLogs', JSON.stringify(logs));
+            displayActivityLog();
+        }
+
+        function displayActivityLog() {
+            const container = document.getElementById('activityLog');
+            if (!container) return;
+            
+            const logs = JSON.parse(localStorage.getItem('activityLogs') || '[]');
+            
+            if (logs.length === 0) {
+                container.innerHTML = '<p class="log-empty">No recent activity</p>';
+                return;
+            }
+            
+            container.innerHTML = logs.map(log => {
+                const date = new Date(log.timestamp);
+                const timeStr = date.toLocaleString();
+                return `
+                    <div class="log-item">
+                        <span class="log-time">${timeStr}</span>
+                        <span class="log-user">${log.user}</span>
+                        <span class="log-action">${log.action}</span>
+                        <span class="log-details">${log.details}</span>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        // Export all data as JSON
+        window.exportAllData = async function() {
+            if (!isOwner()) {
+                alert('Only owner can export data!');
+                return;
+            }
+            
+            try {
+                const animeRef = ref(database, 'anime');
+                const snapshot = await get(animeRef);
+                
+                if (snapshot.exists()) {
+                    const data = snapshot.val();
+                    const jsonStr = JSON.stringify(data, null, 2);
+                    const blob = new Blob([jsonStr], { type: 'application/json' });
+                    const url = URL.createObjectURL(blob);
+                    const a = document.createElement('a');
+                    a.href = url;
+                    a.download = `anime-backup-${Date.now()}.json`;
+                    a.click();
+                    
+                    logActivity('Export Data', 'Exported all anime data');
+                    alert('Data exported successfully!');
+                } else {
+                    alert('No data to export');
+                }
+            } catch (error) {
+                console.error('Export error:', error);
+                alert('Error exporting data');
+            }
+        };
+
+        // Delete all anime (dangerous!)
+        window.deleteAllAnime = async function() {
+            if (!isOwner()) {
+                alert('Only owner can delete all data!');
+                return;
+            }
+            
+            const confirm1 = confirm('⚠️ WARNING: This will delete ALL anime and episodes!\n\nAre you absolutely sure?');
+            if (!confirm1) return;
+            
+            const confirm2 = confirm('This action CANNOT be undone!\n\nType your username to confirm.');
+            if (!confirm2) return;
+            
+            const username = prompt('Enter your username to confirm:');
+            if (username !== currentUser.username) {
+                alert('Username does not match. Deletion cancelled.');
+                return;
+            }
+            
+            try {
+                const animeRef = ref(database, 'anime');
+                await remove(animeRef);
+                
+                logActivity('Delete All', 'Deleted all anime data');
+                alert('All anime deleted!');
+                loadAnimeList();
+                loadAnimeDropdown();
+                updateOwnerStats();
+            } catch (error) {
+                console.error('Delete error:', error);
+                alert('Error deleting data');
+            }
+        };
+
+        // Update statistics for owner
+        async function updateOwnerStats() {
+            if (!isOwner()) return;
+            
+            try {
+                const animeRef = ref(database, 'anime');
+                const snapshot = await get(animeRef);
+                
+                let totalAnime = 0;
+                let totalEpisodes = 0;
+                let totalQualities = 0;
+                
+                if (snapshot.exists()) {
+                    const data = snapshot.val();
+                    totalAnime = Object.keys(data).length;
+                    
+                    Object.values(data).forEach(anime => {
+                        if (anime.episodes) {
+                            const episodes = Object.values(anime.episodes);
+                            totalEpisodes += episodes.length;
+                            
+                            episodes.forEach(ep => {
+                                if (ep.links) {
+                                    totalQualities += Object.keys(ep.links).length;
+                                }
+                            });
+                        }
+                    });
+                }
+                
+                document.getElementById('totalAnime').textContent = totalAnime;
+                document.getElementById('totalEpisodes').textContent = totalEpisodes;
+                document.getElementById('totalQualities').textContent = totalQualities;
+            } catch (error) {
+                console.error('Stats error:', error);
+            }
+        }
+    </script>
+
+    <script>
+        // ===== MULTI-USER AUTHENTICATION =====
+        const USERS = {
+            'Vishal_Animes': {
+                password: 'Vishal786@',
+                role: 'admin'
+            },
+            'abnormal_config': {
+                password: 'khalid786@',
+                role: 'admin'
+            },
+            'owner00': {
+                password: 'khalid786#',
+                role: 'owner'
+            }
+        };
+
+        let currentUser = null;
+
+        // Check if already logged in
+        window.addEventListener('DOMContentLoaded', () => {
+            const savedUser = sessionStorage.getItem('adminUser');
+            const savedRole = sessionStorage.getItem('adminRole');
+            
+            if (savedUser && savedRole) {
+                currentUser = { username: savedUser, role: savedRole };
+                showAdminPanel();
+            }
+        });
+
+        // Handle login
+        document.getElementById('loginForm').addEventListener('submit', (e) => {
+            e.preventDefault();
+            const username = document.getElementById('adminUsername').value.trim();
+            const password = document.getElementById('adminPassword').value;
+            
+            if (USERS[username] && USERS[username].password === password) {
+                currentUser = {
+                    username: username,
+                    role: USERS[username].role
+                };
+                sessionStorage.setItem('adminUser', username);
+                sessionStorage.setItem('adminRole', USERS[username].role);
+                showAdminPanel();
+            } else {
+                document.getElementById('loginError').classList.remove('hidden');
+                document.getElementById('adminUsername').value = '';
+                document.getElementById('adminPassword').value = '';
+                setTimeout(() => {
+                    document.getElementById('loginError').classList.add('hidden');
+                }, 3000);
+            }
+        });
+
+        // Handle logout
+        document.getElementById('logoutBtn').addEventListener('click', (e) => {
+            e.preventDefault();
+            sessionStorage.removeItem('adminUser');
+            sessionStorage.removeItem('adminRole');
+            currentUser = null;
+            location.reload();
+        });
+
+        function showAdminPanel() {
+            document.getElementById('loginScreen').classList.add('hidden');
+            document.getElementById('adminPanel').classList.remove('hidden');
+            
+            // Update user info
+            document.getElementById('welcomeUser').textContent = currentUser.username;
+            document.getElementById('userInitial').textContent = currentUser.username.charAt(0).toUpperCase();
+            document.getElementById('userRole').textContent = currentUser.role === 'owner' ? 'Owner' : 'Admin';
+            
+            // Show owner-only features if owner
+            if (currentUser.role === 'owner') {
+                document.querySelectorAll('.owner-only').forEach(el => {
+                    el.classList.remove('hidden');
+                });
+                updateOwnerStats();
+                displayActivityLog();
+            } else {
+                document.querySelectorAll('.owner-only').forEach(el => {
+                    el.classList.add('hidden');
+                });
+            }
+        }
+
+        // Check if current user is owner
+        function isOwner() {
+            return currentUser && currentUser.role === 'owner';
+        }
+    </script>
+
+    <script type="module">
+        import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js';
+        import { getDatabase, ref, push, set, get, remove } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js';
+
+        // Firebase configuration
+        const firebaseConfig = {
+            apiKey: "AIzaSyDPwwCP2aLK7R22BNUq-rMtOVLs3Zn6xTs",
+            authDomain: "unknown-dubbers.firebaseapp.com",
+            databaseURL: "https://unknown-dubbers-default-rtdb.firebaseio.com",
+            projectId: "unknown-dubbers",
+            storageBucket: "unknown-dubbers.firebasestorage.app",
+            messagingSenderId: "293718979131",
+            appId: "1:293718979131:web:00e0e7efe5127e7b46621e",
+            measurementId: "G-QTQTY7XZ0H"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const database = getDatabase(app);
+
+        // Load anime list on page load
+        window.addEventListener('DOMContentLoaded', () => {
+            loadAnimeList();
+            loadAnimeDropdown();
+        });
+
+        // Handle anime form submission
+        document.getElementById('animeForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+
+            const animeName = document.getElementById('animeName').value.trim();
+            const animePoster = document.getElementById('animePoster').value.trim();
+            const animeDescription = document.getElementById('animeDescription').value.trim();
+
+            if (!animeName || !animePoster) {
+                alert('Please fill in all required fields');
+                return;
+            }
+
+            try {
+                const animeRef = ref(database, 'anime');
+                const newAnimeRef = push(animeRef);
+                
+                await set(newAnimeRef, {
+                    name: animeName,
+                    poster: animePoster,
+                    description: animeDescription,
+                    createdAt: Date.now()
+                });
+
+                logActivity('Add Anime', `Added "${animeName}"`);
+                alert('Anime added successfully!');
+                document.getElementById('animeForm').reset();
+                loadAnimeList();
+                loadAnimeDropdown();
+                updateOwnerStats();
+            } catch (error) {
+                console.error('Error adding anime:', error);
+                alert('Error adding anime. Please try again.');
+            }
+        });
+
+        // Handle episode form submission
+        document.getElementById('episodeForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+
+            const animeId = document.getElementById('selectAnime').value;
+            const episodeNumber = parseInt(document.getElementById('episodeNumber').value);
+            const thumbnail = document.getElementById('episodeThumbnail').value.trim();
+            const link480p = document.getElementById('link480p').value.trim();
+            const link720p = document.getElementById('link720p').value.trim();
+            const link1080p = document.getElementById('link1080p').value.trim();
+
+            if (!animeId || !episodeNumber || !thumbnail) {
+                alert('Please fill in all required fields');
+                return;
+            }
+
+            if (!link480p && !link720p && !link1080p) {
+                alert('Please provide at least one quality link');
+                return;
+            }
+
+            try {
+                const episodeRef = ref(database, `anime/${animeId}/episodes`);
+                const newEpisodeRef = push(episodeRef);
+                
+                const links = {};
+                if (link480p) links['480p'] = link480p;
+                if (link720p) links['720p'] = link720p;
+                if (link1080p) links['1080p'] = link1080p;
+
+                await set(newEpisodeRef, {
+                    episodeNumber: episodeNumber,
+                    thumbnail: thumbnail,
+                    links: links,
+                    createdAt: Date.now()
+                });
+
+                // Get anime name for logging
+                const animeSnapshot = await get(ref(database, `anime/${animeId}`));
+                const animeName = animeSnapshot.exists() ? animeSnapshot.val().name : 'Unknown';
+                
+                logActivity('Add Episode', `Added Episode ${episodeNumber} to "${animeName}"`);
+                alert('Episode added successfully!');
+                document.getElementById('episodeForm').reset();
+                updateOwnerStats();
+            } catch (error) {
+                console.error('Error adding episode:', error);
+                alert('Error adding episode. Please try again.');
+            }
+        });
+
+        async function loadAnimeList() {
+            try {
+                const animeRef = ref(database, 'anime');
+                const snapshot = await get(animeRef);
+                const container = document.getElementById('animeList');
+                
+                if (snapshot.exists()) {
+                    const animeData = snapshot.val();
+                    container.innerHTML = '';
+
+                    Object.entries(animeData).forEach(([id, anime]) => {
+                        const item = document.createElement('div');
+                        item.className = 'anime-list-item';
+                        
+                        const episodeCount = anime.episodes ? Object.keys(anime.episodes).length : 0;
+                        
+                        item.innerHTML = `
+                            <img src="${anime.poster}" alt="${anime.name}">
+                            <div class="anime-list-info">
+                                <h3>${anime.name}</h3>
+                                <p>${episodeCount} episodes</p>
+                            </div>
+                            <button class="btn-danger" onclick="deleteAnime('${id}', '${anime.name}')">Delete</button>
+                        `;
+                        container.appendChild(item);
+                    });
+                } else {
+                    container.innerHTML = '<p>No anime added yet.</p>';
+                }
+            } catch (error) {
+                console.error('Error loading anime:', error);
+                document.getElementById('animeList').innerHTML = '<p>Error loading anime list.</p>';
+            }
+        }
+
+        async function loadAnimeDropdown() {
+            try {
+                const animeRef = ref(database, 'anime');
+                const snapshot = await get(animeRef);
+                const dropdown = document.getElementById('selectAnime');
+                
+                dropdown.innerHTML = '<option value="">-- Select Anime --</option>';
+                
+                if (snapshot.exists()) {
+                    const animeData = snapshot.val();
+                    Object.entries(animeData).forEach(([id, anime]) => {
+                        const option = document.createElement('option');
+                        option.value = id;
+                        option.textContent = anime.name;
+                        dropdown.appendChild(option);
+                    });
+                }
+            } catch (error) {
+                console.error('Error loading dropdown:', error);
+            }
+        }
+
+        window.deleteAnime = async function(animeId, animeName) {
+            if (!confirm(`Are you sure you want to delete "${animeName}"? This will also delete all episodes.`)) {
+                return;
+            }
+
+            try {
+                const animeRef = ref(database, `anime/${animeId}`);
+                await remove(animeRef);
+                
+                logActivity('Delete Anime', `Deleted "${animeName}"`);
+                alert('Anime deleted successfully!');
+                loadAnimeList();
+                loadAnimeDropdown();
+                updateOwnerStats();
+            } catch (error) {
+                console.error('Error deleting anime:', error);
+                alert('Error deleting anime. Please try again.');
+            }
+        };
+    </script>
+</body>
+</html>

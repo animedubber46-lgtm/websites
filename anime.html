@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Anime Details - Unknown Dubbers</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <header>
+        <div class="container">
+            <h1>🎬 UNKNOWN DUBBERS</h1>
+            <nav>
+                <a href="index.html">Home</a>
+                <a href="admin.html">Admin Panel</a>
+            </nav>
+        </div>
+    </header>
+
+    <main class="container">
+        <div id="animeDetails">
+            <p class="loading">Loading anime details...</p>
+        </div>
+
+        <section id="episodesSection" class="hidden">
+            <h2>Episodes</h2>
+            <div id="episodesGrid" class="episodes-grid"></div>
+        </section>
+    </main>
+
+    <!-- Quality Selection Modal -->
+    <div id="qualityModal" class="modal hidden">
+        <div class="modal-content">
+            <span class="close">&times;</span>
+            <h2>Select Quality</h2>
+            <div id="qualityButtons"></div>
+        </div>
+    </div>
+
+    <script type="module">
+        import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js';
+        import { getDatabase, ref, get } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js';
+
+        // Firebase configuration
+        const firebaseConfig = {
+            apiKey: "AIzaSyDPwwCP2aLK7R22BNUq-rMtOVLs3Zn6xTs",
+            authDomain: "unknown-dubbers.firebaseapp.com",
+            databaseURL: "https://unknown-dubbers-default-rtdb.firebaseio.com",
+            projectId: "unknown-dubbers",
+            storageBucket: "unknown-dubbers.firebasestorage.app",
+            messagingSenderId: "293718979131",
+            appId: "1:293718979131:web:00e0e7efe5127e7b46621e",
+            measurementId: "G-QTQTY7XZ0H"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const database = getDatabase(app);
+
+        // Get anime ID from URL
+        const urlParams = new URLSearchParams(window.location.search);
+        const animeId = urlParams.get('id');
+
+        if (!animeId) {
+            window.location.href = 'index.html';
+        }
+
+        // Load anime details
+        window.addEventListener('DOMContentLoaded', loadAnimeDetails);
+
+        async function loadAnimeDetails() {
+            try {
+                const animeRef = ref(database, `anime/${animeId}`);
+                const snapshot = await get(animeRef);
+                
+                if (snapshot.exists()) {
+                    const anime = snapshot.val();
+                    displayAnimeDetails(anime);
+                    displayEpisodes(anime.episodes || {});
+                } else {
+                    document.getElementById('animeDetails').innerHTML = '<p>Anime not found.</p>';
+                }
+            } catch (error) {
+                console.error('Error loading anime:', error);
+                document.getElementById('animeDetails').innerHTML = '<p>Error loading anime details.</p>';
+            }
+        }
+
+        function displayAnimeDetails(anime) {
+            const container = document.getElementById('animeDetails');
+            container.innerHTML = `
+                <div class="anime-header">
+                    <img src="${anime.poster || 'placeholder.jpg'}" alt="${anime.name}" class="anime-poster-large">
+                    <div class="anime-info">
+                        <h1>${anime.name}</h1>
+                        <p>${anime.description || 'No description available.'}</p>
+                    </div>
+                </div>
+            `;
+        }
+
+        function displayEpisodes(episodes) {
+            const section = document.getElementById('episodesSection');
+            const grid = document.getElementById('episodesGrid');
+            
+            const episodeArray = Object.entries(episodes).map(([id, data]) => ({
+                id,
+                ...data
+            })).sort((a, b) => a.episodeNumber - b.episodeNumber);
+
+            if (episodeArray.length === 0) {
+                grid.innerHTML = '<p>No episodes available yet.</p>';
+                section.classList.remove('hidden');
+                return;
+            }
+
+            grid.innerHTML = '';
+            episodeArray.forEach(episode => {
+                const card = document.createElement('div');
+                card.className = 'episode-card';
+                card.innerHTML = `
+                    <img src="${episode.thumbnail || 'placeholder.jpg'}" alt="Episode ${episode.episodeNumber}">
+                    <h3>Episode ${episode.episodeNumber}</h3>
+                `;
+                card.onclick = () => showQualityModal(episode);
+                grid.appendChild(card);
+            });
+
+            section.classList.remove('hidden');
+        }
+
+        function showQualityModal(episode) {
+            const modal = document.getElementById('qualityModal');
+            const buttonsContainer = document.getElementById('qualityButtons');
+            
+            buttonsContainer.innerHTML = '';
+
+            // Add quality buttons
+            const qualities = ['480p', '720p', '1080p'];
+            qualities.forEach(quality => {
+                if (episode.links && episode.links[quality]) {
+                    const btn = document.createElement('button');
+                    btn.className = 'quality-btn';
+                    btn.textContent = quality;
+                    btn.onclick = () => {
+                        window.location.href = episode.links[quality];
+                    };
+                    buttonsContainer.appendChild(btn);
+                }
+            });
+
+            if (buttonsContainer.children.length === 0) {
+                buttonsContainer.innerHTML = '<p>No quality options available for this episode.</p>';
+            }
+
+            modal.classList.remove('hidden');
+        }
+
+        // Close modal
+        document.querySelector('.close').onclick = () => {
+            document.getElementById('qualityModal').classList.add('hidden');
+        };
+
+        window.onclick = (event) => {
+            const modal = document.getElementById('qualityModal');
+            if (event.target === modal) {
+                modal.classList.add('hidden');
+            }
+        };
+    </script>
+</body>
+</html>
